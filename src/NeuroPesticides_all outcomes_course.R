@@ -2,7 +2,7 @@
 #PROJECT:	  Waksio Pesticide Project
 #PURPOSE: 	Neuro analysis - Bayesian Adaptive Sampling (BAS) analysis
 #FILENAME:  NeuroPesticides_all outcomes
-#PATH:		  "C:/Users/samue/Dropbox/1_PhD/02 Projects/20XX - Winkler_Pesticides EAWAG_Winkler/06_Uganda/11 - Data analysis/03 - stata data"
+#PATH:		  "../data/raw/Analysis_Exposure_Neuro_clean.dta"
 #CREATED: 	01.05.2019       
 #AUTHOR:    S Fuhrimann
 #DATA IN:  	Analysis_Exposure_Neuro_clean.dta
@@ -12,6 +12,7 @@
 # Bayesian Adaptive Sampling for Bayesian Model Averaging and Variable Selection in Linear Models
 
 # Content
+# 0. Library
 # 1. Read in data
 # 2. Create vectors with names of outcomes, covariates, and exposures
 # 3. Quality control - select variable according to critiraias, i.e. exposure at least 20 observation   
@@ -21,7 +22,7 @@
 # 7. plot the regession models as forest plot
 
 ###################################################
-# Library
+# 0. Library
 library(readxl)
 library(BAS)      
 library(dplyr)
@@ -33,6 +34,7 @@ library(pastecs)    # describtive stat
 library(Amelia)     # can map missing data
 library(survival)   # creat cross-tables
 library(tidyr)      # reshape data set
+library(docstring)  # creat file with all comments #'
 
 ###################################################################################
 # 1. Read in data
@@ -132,30 +134,21 @@ df$OUT <- factor(df$OUT,levels=c("n12SVF_c", "n11PVF_c", "n3CT_t", "n5VDS_b",	"n
                                 "Mot-Peg-d","Mot-Peg-nd","Mot-Tap-d","Mot-Tap-nd"))
 levels(df$OUT)
 
-write.csv(df, file =  "C:/Users/samue/Dropbox/1_PhD/02 Projects/20XX - Winkler_Pesticides EAWAG_Winkler/06_Uganda/11 - Data analysis/05 - results/reg.ug.298.cont.csv")
+write.csv(df, file =  "../results/output/reg.ug.298.cont.csv")
 
 df_beta <- df %>% select("OUT", "EXPO", "Estimate")
 df_beta_w <- df_beta %>% spread(OUT, EXPO)    
 
 # Forest plot
-png("C:/Users/samue/Dropbox/1_PhD/02 Projects/20XX - Winkler_Pesticides EAWAG_Winkler/06_Uganda/11 - Data analysis/05 - results/forest_out.png",height=15,width=10,unit="in",res=300)
-ggplot(df,aes(OUT,Estimate))+
-  geom_point(size=3)+
-  geom_errorbar(aes(ymin=Lower,ymax=Upper),width=0.2,lwd=1.1)+
-  facet_wrap(~EXPO,scales="free")+     # all models together
-  coord_flip()+                        # flip the x and y axis
-  #coord_flip(ylim=c(-2,2))+
-  geom_hline(yintercept=0, lty=2) +    # add a dotted line at x=0 after flip
-  xlab(label="Neurocognetive outcome")+ylab(label="Exposure Score")+
-  labs(title="Model",
-       subtitle="Cont.- n249")
+png("../results/figures/forest_out.png",height=15,width=10,unit="in",res=300)
+  ggplot(df,aes(OUT,Estimate)) +
+    geom_point(size=3) +
+    geom_errorbar(aes(ymin=Lower,ymax=Upper), width=0.2, lwd=1.1) +
+    facet_wrap(~EXPO,scales="free")+     # all models together
+    coord_flip()+                        # flip the x and y axis
+    #coord_flip(ylim=c(-2,2)) +
+    geom_hline(yintercept=0, lty=2) +    # add a dotted line at x=0 after flip
+    xlab(label="Neurocognetive outcome")+ylab(label="Exposure Score") +
+    labs(title="Model", subtitle="Cont.- n249")
 dev.off()
-
-
-
-
-
-
-
-
 
